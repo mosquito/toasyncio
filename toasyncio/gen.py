@@ -1,18 +1,24 @@
+# encoding: utf-8
 import types
 import asyncio
 import tornado.ioloop
 import tornado.gen
 import tornado.platform.asyncio
+from functools import wraps
 
 
 def coroutine(func):
     @tornado.gen.coroutine
+    @wraps(func)
     def wrap(*args, **kwargs):
         result = func(*args, **kwargs)
         if not isinstance(result, types.GeneratorType):
             return result
 
         io_loop = tornado.ioloop.IOLoop.current()
+
+        assert isinstance(io_loop, tornado.platform.asyncio.AsyncIOLoop), \
+            "IOLoop must be instance of tornado.platform.asyncio.AsyncIOLoop"
 
         current_future = None
         current_result = None
@@ -44,3 +50,5 @@ def coroutine(func):
 
     return wrap
 
+
+tornado.ioloop.IOLoop.configure('tornado.platform.asyncio.AsyncIOLoop')
