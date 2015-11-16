@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-version_info = (0, 5, 0)
+version_info = (0, 5, 1)
 author_info = (
     {"name": "Ilya Smirnov", "email": "ilya94@mail.ru"},
     {"name": "Dmitry Orlov", "email": "me@mosquito.su"},

@@ -1,5 +1,6 @@
 # encoding: utf-8
 from .gen import coroutine
+from tornado.ioloop import IOLoop
 import tornado.testing
 import tornado.platform.asyncio
 from functools import wraps, partial
@@ -29,9 +30,11 @@ def gen_test(func=None, timeout=None):
 
         @wraps(coro)
         def post_coroutine(self, *args, **kwargs):
+            io_loop = getattr(self, "io_loop", None)
+            io_loop = io_loop or IOLoop.instance()
             try:
                 p = partial(coro, self, *args, **kwargs)
-                assert isinstance(self.io_loop, tornado.platform.asyncio.AsyncIOLoop), \
+                assert isinstance(io_loop, tornado.platform.asyncio.AsyncIOLoop), \
                     "IOLoop must be instance of tornado.platform.asyncio.AsyncIOLoop"
                 return self.io_loop.run_sync(p, timeout=timeout)
             except TimeoutError as e:
