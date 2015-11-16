@@ -6,7 +6,7 @@ setup(
     name='toasyncio',
     packages=find_packages(exclude=['tests']),
     install_requires=(
-        'tornado>=4.2',
+        'tornado>=4.3',
         'asyncio',
     ),
     author=toasyncio.__author__,
