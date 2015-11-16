@@ -4,6 +4,7 @@ import asyncio
 import tornado.ioloop
 import tornado.gen
 import tornado.platform.asyncio
+import traceback
 from functools import wraps
 
 
@@ -21,7 +22,6 @@ def coroutine(func):
             "IOLoop must be instance of tornado.platform.asyncio.AsyncIOLoop"
 
         current_future = None
-        current_result = None
 
         try:
             while True:
@@ -39,14 +39,13 @@ def coroutine(func):
                     current_result = yield tornado.platform.asyncio.to_tornado_future(current_future)
 
                 else:
-                    raise TypeError('Expected generator or future: %s' % type(current_future))
+                    result.throw(TypeError, 'Expected generator or future: %s' % type(current_future),
+                                 result.gi_frame.f_trace)
 
                 current_future = result.send(current_result)
 
         except StopIteration as e:
             return e.value
-
-        return current_result
 
     return wrap
 
