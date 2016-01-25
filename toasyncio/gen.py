@@ -28,17 +28,14 @@ def coroutine(func):
                 if not current_future:
                     current_future = next(result)
 
-                if isinstance(current_future, (tornado.gen.Future, list)):                                                             
-                    pass                                                                                                               
-    
-                elif isinstance(current_future, types.GeneratorType):                                                                  
-                    task = asyncio.tasks.Task(current_future, loop=io_loop.asyncio_loop)                                               
-                    current_future = tornado.platform.asyncio.to_tornado_future(task)                                                  
-        
-                elif isinstance(current_future, asyncio.Future):                                                                       
-                    current_future = tornado.platform.asyncio.to_tornado_future(current_future)                                        
+                if isinstance(current_future, types.GeneratorType):
+                    task = asyncio.tasks.Task(current_future, loop=io_loop.asyncio_loop)
+                    current_future = tornado.platform.asyncio.to_tornado_future(task)
 
-                else:
+                elif isinstance(current_future, asyncio.Future):
+                    current_future = tornado.platform.asyncio.to_tornado_future(current_future)
+
+                elif not isinstance(current_future, (tornado.gen.Future, list)):
                     result.throw(TypeError, 'Expected generator or future: %s' % type(current_future),
                                  result.gi_frame.f_trace)
 
